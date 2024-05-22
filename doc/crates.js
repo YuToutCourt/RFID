@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["RFID","bitflags","pcsc","pcsc_sys"];

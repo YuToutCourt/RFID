@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_ATR_SIZE","MAX_BUFFER_SIZE","MAX_BUFFER_SIZE_EXTENDED"],"enum":["Attribute","AttributeClass","Disposition","Error","Protocol","Scope","ShareMode"],"fn":["PNP_NOTIFICATION","ctl_code"],"struct":["Card","CardStatus","CardStatusOwned","Context","Protocols","ReaderNames","ReaderState","State","Status","Transaction"]};

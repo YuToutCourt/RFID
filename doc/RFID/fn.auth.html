@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Authentifie un bloc spécifique de la carte."><title>auth in RFID - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="RFID" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-4c98445ec4002617.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../RFID/index.html">RFID</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../RFID/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Function <a href="index.html">RFID</a>::<wbr><a class="fn" href="#">auth</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/RFID/main.rs.html#122-143">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub(crate) fn auth(card: &amp;<a class="struct" href="../pcsc/struct.Card.html" title="struct pcsc::Card">Card</a>, block: <a class="primitive" href="https://doc.rust-lang.org/1.77.2/std/primitive.u8.html">u8</a>)</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Authentifie un bloc spécifique de la carte.</p>
+<h2 id="arguments"><a class="doc-anchor" href="#arguments">§</a>Arguments</h2>
+<ul>
+<li><code>card</code> - Référence à l’objet <code>Card</code> représentant la connexion à la carte.</li>
+<li><code>block</code> - Numéro du bloc à authentifier.</li>
+</ul>
+<h2 id="explication"><a class="doc-anchor" href="#explication">§</a>Explication</h2>
+<p>Cette fonction authentifie un bloc spécifique sur une carte à puce, permettant ainsi l’accès aux données de ce bloc. Le processus est le suivant :</p>
+<ol>
+<li>
+<p><strong>Préparation de l’APDU d’authentification</strong> :
+Un APDU (Application Protocol Data Unit) de commande est préparé avec les champs suivants :</p>
+<ul>
+<li><code>0xFF</code> : Classe de commande.</li>
+<li><code>0x86</code> : Instruction pour l’authentification générale.</li>
+<li><code>0x00</code> : P1 (paramètre 1).</li>
+<li><code>0x00</code> : P2 (paramètre 2).</li>
+<li><code>0x05</code> : Lc (longueur du champ de données).</li>
+<li><code>0x01</code> : Numéro de version.</li>
+<li><code>0x00</code> : Inconnu, peut-être un byte de réserve.</li>
+<li><code>block</code> : Numéro du bloc à authentifier.</li>
+<li><code>0x60</code> : Type de clé (0x60 pour la clé A).</li>
+<li><code>0x00</code> : Numéro de la clé (0 pour la clé chargée).</li>
+</ul>
+</li>
+<li>
+<p><strong>Transmission de l’APDU et réception des données</strong> :
+La commande APDU préparée est transmise à la carte à puce en utilisant la méthode <code>transmit</code>.
+La réponse de la carte est stockée dans le tableau <code>rapdu</code>.</p>
+</li>
+<li>
+<p><strong>Vérification du statut de l’opération</strong> :
+La fonction vérifie le code de statut de la réponse APDU. Le premier octet de la réponse (<code>rapdu[0]</code>) est comparé à <code>0x90</code>, qui indique une opération réussie.</p>
+<ul>
+<li>Si le code de statut n’est pas <code>0x90</code>, un message d’erreur est affiché indiquant l’échec de l’authentification.</li>
+</ul>
+</li>
+</ol>
+<h2 id="notes"><a class="doc-anchor" href="#notes">§</a>Notes</h2>
+<ul>
+<li><code>MAX_BUFFER_SIZE</code> doit être défini quelque part dans votre code pour représenter la taille maximale du tampon pour la réponse APDU.</li>
+<li>Le code vérifie seulement le premier octet de la réponse pour le code de statut, mais généralement les deux derniers octets sont utilisés pour indiquer le statut dans les réponses APDU.
+Cela pourrait être une erreur potentielle dans la vérification du statut, à moins que cela ne soit conforme aux spécifications de votre carte particulière.</li>
+</ul>
+<h2 id="exemple"><a class="doc-anchor" href="#exemple">§</a>Exemple</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>card: Card = ...; <span class="comment">// Code pour initialiser et connecter la carte
+</span>auth(<span class="kw-2">&amp;</span>card, <span class="number">4</span>); <span class="comment">// Authentifie le bloc 4</span></code></pre></div>
+</div></details></section></div></main></body></html>

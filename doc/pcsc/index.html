@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Communicate with smart cards using the PC/SC API."><title>pcsc - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="pcsc" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-4c98445ec4002617.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../pcsc/index.html">pcsc</a><span class="version">2.8.2</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../pcsc/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">pcsc</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/pcsc/lib.rs.html#1-1708">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Communicate with smart cards using the PC/SC API.</p>
+<p>PC/SC (Personal Computer/Smart Card) is a standard API for
+communicating with smart cards – enumerating card readers, connecting
+to smart cards, sending them commands, etc. See <a href="https://en.wikipedia.org/wiki/PC/SC">Wikipedia</a> and
+<a href="https://pcscworkgroup.com/">PC/SC Workgroup</a> for more information.</p>
+<p>This library is a safe and ergonomic FFI wrapper around the following
+PC/SC implementations:</p>
+<ul>
+<li>
+<p>On Windows, the built-in <code>WinSCard.dll</code> library and “Smart Card”
+service. See <a href="https://msdn.microsoft.com/EN-US/library/aa374731.aspx#smart_card_functions">MSDN</a> for documentation of the implemented API.</p>
+</li>
+<li>
+<p>On macOS, the built-in PCSC framework.</p>
+</li>
+<li>
+<p>On Linux, BSDs and (hopefully) other systems, the PCSC lite library
+and pcscd daemon. See <a href="https://pcsclite.apdu.fr/">pcsclite</a> for documentation of the
+implemented API.</p>
+</li>
+</ul>
+<p>This crate depends on the <a href="https://docs.rs/pcsc-sys"><code>pcsc-sys</code></a> crate. See its documentation
+if you need to customize how the PCSC implementation is found.</p>
+<h3 id="communicating-with-a-smart-card"><a class="doc-anchor" href="#communicating-with-a-smart-card">§</a>Communicating with a smart card</h3>
+<p>To communicate with a smart card, you send it APDU (Application
+Protocol Data Unit) commands, and receive APDU responses.</p>
+<p>The format of these commands is described in the <a href="https://cardwerk.com/iso-7816-part-4/">ISO 7816 Part 4</a>
+standard. The commands themselves vary based on the application on the
+card.</p>
+<h3 id="note-on-portability"><a class="doc-anchor" href="#note-on-portability">§</a>Note on portability</h3>
+<p>The various implementations are not fully consistent with each other,
+and some may also miss various features or exhibit various bugs.
+Hence, you cannot assume that code which works on one platform will
+behave the same in all other platforms - unfortunately, some
+adjustments might be needed to reach a common base. See <a href="https://pcsclite.apdu.fr/">pcsclite</a>
+for a list of documented differences, and <a href="https://ludovicrousseau.blogspot.com/">Ludovic Rousseau’s blog</a>
+archive for many more details.</p>
+<p>Not all PC/SC functionality is covered yet; if you are missing
+something, please open an issue.</p>
+<h3 id="note-on-strings"><a class="doc-anchor" href="#note-on-strings">§</a>Note on strings</h3>
+<p>The library uses C strings (<code>&amp;CStr</code>) for all strings (e.g. card reader
+names), to avoid any allocation and conversion overhead.</p>
+<p>In pcsclite and macOS, all strings are guaranteed to be UTF-8 encoded.</p>
+<p>In Windows, the API provides two variants of all functions dealing
+with strings - ASCII and Unicode (in this case, meaning 16-bits wide
+strings). For ease of implementation, this library wraps the ASCII
+variants only. (If you require Unicode names in Windows, please open
+an issue.)</p>
+<p>Since ASCII is a subset of UTF-8, you can thus safely use UTF-8
+conversion functions such as <code>to_str()</code> to obtain an <code>&amp;str</code>/<code>String</code>
+from this library – but don’t do this if you don’t need to ☺</p>
+<h3 id="note-on-thread-safety-and-blocking-operations"><a class="doc-anchor" href="#note-on-thread-safety-and-blocking-operations">§</a>Note on thread safety and blocking operations</h3>
+<p>A library context can be safely moved to another thread or cloned and
+used from multiple threads.</p>
+<p>Operations on a given context are not performed concurrently. If one
+thread performs a blocking operation on a context, such as
+<code>get_status_change()</code>, then another operation on the context will
+block until the ongoing operation finishes.</p>
+<p>An ongoing blocking operation on a context can be canceled from another
+thread by calling the <code>cancel</code> function on the context.</p>
+<p>If you want to perform concurrent operations, for example, monitor
+smart card reader changes in one thread, and send commands to cards in
+another, create a different context for each thread.</p>
+<p>Note however, that if one context has an exclusive transaction with a
+card, any operation on the same underlying card from not within the
+transaction will block even across contexts.</p>
+<p>When issuing a series of commands to a card, it is recommended to always
+use a transaction – other programs and even system services can get in
+the way otherwise, even if you don’t expect it.</p>
+<p>See <a href="https://msdn.microsoft.com/en-us/library/ms953432.aspx#smartcardcspcook_topic2">MSDN</a> for more details.</p>
+</div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.ffi"><code>pub use <a class="mod" href="../pcsc_sys/index.html" title="mod pcsc_sys">pcsc_sys</a> as ffi;</code></div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Card.html" title="struct pcsc::Card">Card</a></div><div class="desc docblock-short">A connection to a smart card.</div></li><li><div class="item-name"><a class="struct" href="struct.CardStatus.html" title="struct pcsc::CardStatus">CardStatus</a></div><div class="desc docblock-short">Status of a card in a card reader.</div></li><li><div class="item-name"><a class="struct" href="struct.CardStatusOwned.html" title="struct pcsc::CardStatusOwned">CardStatusOwned</a></div><div class="desc docblock-short">Status of a card in a card reader (owned).</div></li><li><div class="item-name"><a class="struct" href="struct.Context.html" title="struct pcsc::Context">Context</a></div><div class="desc docblock-short">Library context to the PCSC service.</div></li><li><div class="item-name"><a class="struct" href="struct.Protocols.html" title="struct pcsc::Protocols">Protocols</a></div><div class="desc docblock-short">A mask of possible communication protocols.</div></li><li><div class="item-name"><a class="struct" href="struct.ReaderNames.html" title="struct pcsc::ReaderNames">ReaderNames</a></div><div class="desc docblock-short">An iterator over card reader names.</div></li><li><div class="item-name"><a class="struct" href="struct.ReaderState.html" title="struct pcsc::ReaderState">ReaderState</a></div><div class="desc docblock-short">A structure for tracking the current state of card readers and cards.</div></li><li><div class="item-name"><a class="struct" href="struct.State.html" title="struct pcsc::State">State</a></div><div class="desc docblock-short">A mask of the state a card reader.</div></li><li><div class="item-name"><a class="struct" href="struct.Status.html" title="struct pcsc::Status">Status</a></div><div class="desc docblock-short">A mask of the status of a card in a card reader.</div></li><li><div class="item-name"><a class="struct" href="struct.Transaction.html" title="struct pcsc::Transaction">Transaction</a></div><div class="desc docblock-short">An exclusive transaction with a card.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Attribute.html" title="enum pcsc::Attribute">Attribute</a></div><div class="desc docblock-short">Card reader attribute types.</div></li><li><div class="item-name"><a class="enum" href="enum.AttributeClass.html" title="enum pcsc::AttributeClass">AttributeClass</a></div><div class="desc docblock-short">A class of Attributes.</div></li><li><div class="item-name"><a class="enum" href="enum.Disposition.html" title="enum pcsc::Disposition">Disposition</a></div><div class="desc docblock-short">Disposition method when disconnecting from a card reader.</div></li><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum pcsc::Error">Error</a></div><div class="desc docblock-short">Possible library errors.</div></li><li><div class="item-name"><a class="enum" href="enum.Protocol.html" title="enum pcsc::Protocol">Protocol</a></div><div class="desc docblock-short">A smart card communication protocol.</div></li><li><div class="item-name"><a class="enum" href="enum.Scope.html" title="enum pcsc::Scope">Scope</a></div><div class="desc docblock-short">Scope of a context.</div></li><li><div class="item-name"><a class="enum" href="enum.ShareMode.html" title="enum pcsc::ShareMode">ShareMode</a></div><div class="desc docblock-short">How a reader connection is shared.</div></li></ul><h2 id="constants" class="section-header">Constants<a href="#constants" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="constant" href="constant.MAX_ATR_SIZE.html" title="constant pcsc::MAX_ATR_SIZE">MAX_ATR_SIZE</a></div><div class="desc docblock-short">Maximum amount of bytes in an ATR.</div></li><li><div class="item-name"><a class="constant" href="constant.MAX_BUFFER_SIZE.html" title="constant pcsc::MAX_BUFFER_SIZE">MAX_BUFFER_SIZE</a></div><div class="desc docblock-short">Maximum amount of bytes in a short APDU command or response.</div></li><li><div class="item-name"><a class="constant" href="constant.MAX_BUFFER_SIZE_EXTENDED.html" title="constant pcsc::MAX_BUFFER_SIZE_EXTENDED">MAX_BUFFER_SIZE_EXTENDED</a></div><div class="desc docblock-short">Maximum amount of bytes in an extended APDU command or response.</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.PNP_NOTIFICATION.html" title="fn pcsc::PNP_NOTIFICATION">PNP_NOTIFICATION</a></div><div class="desc docblock-short">A special reader name for detecting card reader insertions and removals.</div></li><li><div class="item-name"><a class="fn" href="fn.ctl_code.html" title="fn pcsc::ctl_code">ctl_code</a></div><div class="desc docblock-short">Transform a control code in the form expected by the platform.</div></li></ul></section></div></main></body></html>
