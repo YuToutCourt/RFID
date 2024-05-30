@@ -21,9 +21,6 @@ Prendre en main la lib PCSC et comprendre le code fourni
 Un tag RFID est découpé en secteur qui eux mêmes sont découpés en bloc. \
 Sur nos tag, nous avions 64 secteurs qui sont composés eux même de 4 bloc de 16 Octets hexadécimaux. \
 
-Voici un screenshot de dump de tag :
-<img src="tag.jpg" width="455" height="900">
-<br><br><br><br><br>
 **Secteur 0 :**
 La première ligne du secteur 0 contient le numéro de série du tag.
 
