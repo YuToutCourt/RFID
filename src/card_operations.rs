@@ -51,12 +51,16 @@ pub mod card_operations {
         ///
         /// * `key` - Un tableau de 6 octets représentant la clé à charger.
         ///
+        /// # Retourne
+        ///
+        /// * `u8` - 1 si le chargement de la clé réussit, 0 sinon.
+        ///
         /// # Exemples
         ///
         /// ```
         /// card_manager.keyload([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
         /// ```
-        pub fn keyload(&self, key: [u8; 6]) {
+        pub fn keyload(&self, key: [u8; 6]) -> u8 {
             let load_key_apdu = [
                 0xFF, // Class
                 0x82, // INS: Load Authentication Key
@@ -68,21 +72,20 @@ pub mod card_operations {
 
             let mut rapdu = [0; 256];
              match self.card.transmit(&load_key_apdu, &mut rapdu) {
-            Ok(_) => {
-                return;
-            }
-            Err(e) => {
-                println!("Erreur lors de la transmission: {:?}", e);
-            }
-        }
-
-            
-
+                Ok(v) => {
+                    return 1;
+                }
+                Err(e) => {
+                    println!("Erreur lors de la transmission: {:?}", e);
+                }
+             }
             let status_word = &rapdu[..2];
             if status_word != [0x90, 0x00] {
                 eprintln!("Chargement des clés échouées, code: {:02X?}", status_word);
-                return;
+                return 0;
             }
+
+            return 1;
         }
 
         /// Authentifie la carte pour un bloc spécifique.
@@ -91,12 +94,16 @@ pub mod card_operations {
         ///
         /// * `block` - Le numéro du bloc à authentifier.
         ///
+        /// # Retourne
+        ///
+        /// * `u8` - 1 si l'authentification réussit, 0 sinon.
+        ///
         /// # Exemples
         ///
         /// ```
         /// card_manager.auth(4);
         /// ```
-        pub fn auth(&self, block: u8) {
+        pub fn auth(&self, block: u8) -> u8 {
             let auth_apdu = [
                 0xFF, // Class
                 0x86, // INS: General Authenticate
@@ -115,8 +122,11 @@ pub mod card_operations {
             let status_word = rapdu[0];
             if status_word != 0x90 {
                 eprintln!("Authentification échouée, code: {:02X?}", status_word);
-                return;
+                return 0;
             }
+
+            return 1;
+
         }
 
         /// Lit les données d'un bloc spécifique.
@@ -261,6 +271,41 @@ pub mod card_operations {
             let card = CardManager::loadreader().unwrap();
             assert!(!card.is_connected());
         }
+
+        #[test]
+        fn test_keyload_valid() {
+            let card = CardManager::loadreader().unwrap();
+            let res = card.keyload([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+            assert_eq!(res, 1);
+        }
+
+        #[test]
+        fn test_keyload_invalid() {
+            let card = CardManager::loadreader().unwrap();
+            let res = card.keyload([0x0f, 0xff, 0xef, 0xef, 0xaf, 0xff]);
+            assert_eq!(res, 0);
+        }
+
+        fn test_read() -> Vec<Vec<u8>>{
+            let card = CardManager::loadreader().unwrap();
+            let data = card.read_sector(3);
+            data
+        }
+
+        fn test_write(){
+            let data = [0x00; 16];
+            let card = CardManager::loadreader().unwrap();
+            card.write_sector(3, data);
+
+        }
+
+        #[test]
+        fn test_write_and_read() {
+            test_write();
+            let data = test_read();
+            assert_eq!(data, vec![[0x00; 16]; 3]);
+        }
+
 
     }
 
