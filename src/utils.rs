@@ -1,4 +1,5 @@
 pub mod utils {
+    use rand::Rng;
 
     /// Convertit une chaîne hexadécimale en un tableau d'octets.
     ///
@@ -40,7 +41,7 @@ pub mod utils {
     /// assert_eq!(result, [0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF]);
     /// ```
     ///
-    pub fn hexa_to_tableau(hexa: String) -> [u8; 16] {
+    pub fn _hexa_to_tableau(hexa: String) -> [u8; 16] {
         let mut tableau = [0u8; 16];
         let mut index = 0;
 
@@ -86,7 +87,7 @@ pub mod utils {
     /// println!("{}", decimal_value); // Affiche "16776995"
     /// ```
     ///
-    pub fn hexa_to_decimal(tableau: Vec<u8>) -> i128 {
+    pub fn _hexa_to_decimal(tableau: Vec<u8>) -> i128 {
         let mut resultat: i128 = 0;
 
         for &hex in tableau.iter() {
@@ -94,5 +95,76 @@ pub mod utils {
         }
 
         resultat
+    }
+    /// Convertit un vecteur de nombres décimaux en une chaîne hexadécimale.
+    ///
+    /// # Arguments
+    ///
+    /// * `decimals` - Un vecteur d'octets représentant les nombres décimaux à convertir.
+    ///
+    /// # Retourne
+    ///
+    /// * `String` - Une chaîne hexadécimale représentant les nombres décimaux.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// let hex_string = utils::decimals_to_hex(vec![10, 15, 255]);
+    /// assert_eq!(hex_string, "A0FFF");
+    /// ```
+    pub fn decimals_to_hex(decimals: Vec<u8>) -> String {
+    decimals.iter().map(|&num| format!("{:X}", num)).collect::<Vec<String>>().join("")
+    }
+
+    /// Génère un token aléatoire de 16 octets et le retourne sous forme de chaîne hexadécimale.
+    ///
+    /// # Retourne
+    ///
+    /// * `String` - Une chaîne hexadécimale représentant le token aléatoire.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// let token = utils::_rngtoken();
+    /// assert_eq!(token.len(), 32); // Un token de 16 octets donne une chaîne hexadécimale de 32 caractères.
+    /// ```
+    pub fn _rngtoken() -> String {
+        let mut rng = rand::thread_rng();
+        let uid: [u8; 16] = rng.gen();
+        let uid_hex: String = uid.iter().map(|byte| format!("{:02x}", byte)).collect();
+        uid_hex
+    }
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn test_rngtoken() {
+            let result = _rngtoken();
+            assert_eq!(result.len(), 32);
+            assert!(result.chars().all(|c| c.is_digit(16)));
+        }
+        #[test]
+        fn test_hexa_to_tableau() {
+            let input = String::from("0123456789ABCDEF0123456789ABCDEF");
+            let expected_output: [u8; 16] = [1, 35, 69, 103, 137, 171, 205, 239, 1, 35, 69, 103, 137, 171, 205, 239];
+            let result = _hexa_to_tableau(input);
+            println!("{:?}", result);
+            assert_eq!(result, expected_output);
+        }
+
+        #[test]
+        fn test_hexa_to_decimal() {
+            let input = vec![0x12, 0x34, 0x56];
+            let expected_output: i128 = 0x123456;
+            let result = _hexa_to_decimal(input);
+            assert_eq!(result, expected_output);
+        }
+        #[test]
+        fn test_decimals_to_hex() {
+            let input = vec![10, 15, 20];
+            let expected_output = "AF14";
+            let result = decimals_to_hex(input);
+            assert_eq!(result, expected_output);
+        }
     }
 }
