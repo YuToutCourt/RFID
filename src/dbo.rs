@@ -4,6 +4,9 @@
 pub mod dbo {
     const DB_URL: &str = "sqlite://sqlite3.db";
     use sqlx::{Error, Pool, Row, Sqlite, SqlitePool};
+    use serde_json::json;
+    use std::fs::File;
+    use std::io::Write;
 
     /// Structure `DboManager` gère les opérations sur la base de données.
 
@@ -105,10 +108,45 @@ pub mod dbo {
             let result = sqlx::query(&query).bind(uuid).execute(&db).await?;
             Ok(result.rows_affected())
         }
+
+        /// Exporte les utilisateurs au format JSON.
+        ///
+        /// # Retourne
+        ///
+        /// * `Result<String, Error>` - Les utilisateurs sous forme de chaîne JSON en cas de succès, sinon une erreur.
+        ///
+        /// # Exemples
+        ///
+        /// ```
+        /// let json_data = DboManager::export_users_to_json(file_path).await;
+        /// ```
+
+        pub async fn export_users_to_json(file_path: &str) -> Result<(), Error>  {
+            let db = Self::dbconnection().await;
+            let query = "SELECT * FROM users";
+            let rows = sqlx::query(query).fetch_all(&db).await?;
+
+            let users: Vec<_> = rows.iter().map(|row| {
+                let uuid: String = row.get("uuid");
+                let name: String = row.get("name");
+                json!({"uuid": uuid, "name": name})
+            }).collect();
+
+            let json_data = json!(users).to_string();
+
+            db.close().await;
+
+            let mut file = File::create(file_path)?;
+            file.write_all(json_data.as_bytes())?;
+
+            Ok(())
+        }
     }
     #[cfg(test)]
     mod tests {
         use super::*;
+        use std::fs;
+
 
         #[tokio::test]
         async fn test_dbconnection() {
@@ -118,8 +156,8 @@ pub mod dbo {
 
         #[tokio::test]
         async fn test_uuid_exist_existing_uuid() {
-            let existing_uuid = "B465DA17D8406263646566676869";
-            let expected_name = "LEBORGNE";
+            let existing_uuid = "A4504FA11A8406263646566676869";
+            let expected_name = "tonton";
             let result = DboManager::uuid_exist(existing_uuid).await;
             assert!(result.is_ok());
             assert_eq!(result.unwrap(), expected_name);
@@ -149,6 +187,18 @@ pub mod dbo {
         async fn test_add_and_del_user() {
             test_adduser().await;
             test_deluser().await;
+        }
+
+
+        #[tokio::test]
+        async fn test_export_users_to_json_file() {
+            let file_path = "export_test_users.json";
+            let result = DboManager::export_users_to_json(file_path).await;
+            assert!(result.is_ok());
+
+            let json_data = fs::read_to_string(file_path).unwrap();
+            println!("{}", json_data);
+
         }
 
 

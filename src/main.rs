@@ -29,8 +29,7 @@ async fn main() {
             interval.tick().await;
             let card = CardManager{card: match CardManager::loadreader(){
             Ok(a) => a,
-            Err(E) => {
-                println!("{:?}", E);
+            Err(_) => {
                 continue;
                 }
             }};
@@ -89,10 +88,19 @@ async fn main() {
                                     println!("Réinitialisation de la carte!");
                                 }
 
+                            Some("export") => {
+                                if let Some(arg) = command.split_whitespace().nth(1) {
+                                    DboManager::export_users_to_json(arg).await.expect("Impossible d'écrire le fichier");
+                                    println!("Exportation du fichier {} réussie", arg);
+                                }
+
+                                
+                            }
                             Some("help") => {
                                 println!("Commandes disponibles :");
                                 println!("  add nomdutilisateur  - permet l'ajout d'une carte dans la base de donnée");
                                 println!("  reset   - Supprime l'uuid de la carte dans la base de donnée");
+                                println!("  export   - Exporte la base de données dans le dossier courant au format json");
                                 println!("  exit   - Quitte le programme");
                             }
                             _ => {

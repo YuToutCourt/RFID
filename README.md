@@ -37,6 +37,29 @@ Le dernier bloc du secteur est, comme dans le secteur 0, dédié aux clés de s�
 
 On peut écrire sur n'importe quel bloc si et seulement si le matériel nous y permet. En effet, certains tag ne nous le permettent pas.
 
+
+## Le projet
+
+Concevevoir un système de badgeage pour une entreprise. Il faut donc que l'on puisse lire et écrire sur les tags RFID.
+Liaison entre le hardware et le code Rust via la lib PCSC.
+
+### Utilisation
+
+- `cargo run` : Lancement du programme
+- `cargo test` : Lancement des tests
+- `cargo build` : Compilation du programme
+- `cargo doc --open` : Génération de la documentation
+
+### Fonctionnalités
+
+- help : Affiche les commandes disponibles
+- add nom d'utilisateur - permet l'ajout d'une carte dans la base de donnée
+- reset - Supprime l'uuid de la carte dans la base de donnée
+- export - Exporte la base de données dans le dossier courant au format json
+
+
+
+
 ## Partie Sécurité
 
 La sécurité RFID ne peut pas se faire "complètement". C'est à dire qu'un tag RFID va utiliser des ondes et ne peuvent pas 100% être sécurisées et une personne malveillante peut répliquer à l'aide d'un [flipper zéro](https://flipperzero.one/) le signal. \

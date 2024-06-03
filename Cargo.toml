@@ -1,5 +1,5 @@
 [package]
-name = "Badgeage"
+name = "badgeage"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,5 @@ pcsc = "2.8.2"
 sqlx = { version = "0.7.4", features = ["runtime-tokio-native-tls", "sqlite"]}
 rand = "0.8"
 tokio = { version = "1.37.0", features = ["full"] }
+serde = "1.0.203"
+serde_json = "1.0.117"
